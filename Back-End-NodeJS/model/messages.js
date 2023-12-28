@@ -9,6 +9,14 @@ const messageSchema = new Schema({
     message : {
         type: String,
         require: true
+    },
+    response: {
+        type: Boolean,
+        default: false
+    },
+    reply: {
+        type: String,
+        require: false
     }
 }, {
     timestamps: true

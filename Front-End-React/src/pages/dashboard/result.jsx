@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import { useAuth } from "@/utils/AuthContext";
 
 // Importing icons from font awesome
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -47,13 +47,16 @@ export function Result() {
   const location = useLocation();
   const { file, url } = location.state;
 
+  const { currentUser } = useAuth()
+
   // This is used to get the analysis data from the backend.
   const { isLoading, error } = useQuery({
     queryKey: ["analysis"],
     queryFn: () =>
       ApiClient.post("/analysis", {
         url, // The URL of the audio file.
-        owner: 1, // ID of the user who is logged in. Currently a dummy value.
+        owner: currentUser.id,
+        duration: "00:00 - 1:45" // ID of the user who is logged in. Currently a dummy value.
       }).then((res) => {
         setAnalysisData(res?.data);
         return res.data;

@@ -23,8 +23,39 @@ exports.sendMessage = async (req, res) => {
 // Controller to get all messages
 exports.getAllMessages = async (req, res) => {
   try {
-    const messages = await Message.find().sort({ createdAt: -1 });
+    const messages = await Message.find({ response: false }).sort({ createdAt: -1 });
+    res.status(200).json({ data: messages });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
 
+exports.postReply = async (req, res) => {
+  const { messageId } = req.params;
+  const { reply } = req.body;
+
+  try {
+    const message = await Message.findById(messageId);
+    if (!message) {
+      return res.status(404).json({ error: 'Message not found' });
+    }
+
+    message.response = true;
+    message.reply = reply;
+    await message.save();
+
+    res.json({ message: 'Reply posted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+exports.getresolved = async (req, res) => {
+  const { name }  = req.body
+  try {
+    const messages = await Message.find({ owner: name }).sort({ createdAt: -1 });
     res.status(200).json({ data: messages });
   } catch (error) {
     console.error(error);
